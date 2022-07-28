@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+
 
 namespace Symplify\SymfonyStaticDumper\Controller;
 
@@ -21,11 +21,11 @@ final class ControllerDumper
         private RoutesProvider $routesProvider,
         private SymfonyStyle $symfonyStyle,
         private FilePathResolver $filePathResolver,
-        private SmartFileSystem $smartFileSystem
+        private SmartFileSystem $smartFileSystem,
     ) {
     }
 
-    public function dump(string $outputDirectory, bool $wpdOnly): void
+    public function dump(string $outputDirectory, $wpdOnly = false): void
     {
         if ($wpdOnly) {
             $this->dumpControllerWithParametersContents($outputDirectory);
@@ -136,6 +136,9 @@ final class ControllerDumper
 
             $filePath = $this->filePathResolver->resolveFilePathWithArgument($route, $outputDirectory, $argument);
             $this->advance($route, $filePath);
+
+            // Removes prefix of the filePath for Digicard project
+            $filePath = str_replace('/digicard', '', $filePath);
 
             $this->smartFileSystem->dumpFile($filePath, $fileContent);
         }
