@@ -27,7 +27,7 @@ final class SymfonyStaticDumperApplication
         $message = sprintf('Files generated to "%s"', $outputDirectory);
         $this->symfonyStyle->success($message);
 
-        $this->assetsCopier->copyAssets($publicDirectory, $outputDirectory);
+        $this->assetsCopier->copyAssets($publicDirectory, $outputDirectory . '/digicard');
         $this->symfonyStyle->success('Assets copied');
     }
 }
