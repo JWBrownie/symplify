@@ -7,6 +7,7 @@ namespace Symplify\SymfonyStaticDumper\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symplify\PackageBuilder\Console\Command\AbstractSymplifyCommand;
 use Symplify\SymfonyStaticDumper\Application\SymfonyStaticDumperApplication;
 
@@ -17,7 +18,8 @@ final class DumpStaticSiteCommand extends AbstractSymplifyCommand
     private string $outputDirectory;
 
     public function __construct(
-        private SymfonyStaticDumperApplication $symfonyStaticDumperApplication
+        private SymfonyStaticDumperApplication $symfonyStaticDumperApplication,
+        private ParameterBagInterface $parameterBag
     ) {
         parent::__construct();
     }
@@ -28,17 +30,18 @@ final class DumpStaticSiteCommand extends AbstractSymplifyCommand
         $this->setDescription('Dump website to static HTML and CSS in the output directory');
 
         // Adding arguments options for the main command
+        $this->addOption('wdp-only', 'w', InputOption::VALUE_NONE, 'Will only process Controllers with Data Providers');
         $this->addOption('public-dir', 'p', InputOption::VALUE_REQUIRED, 'Define the input public directory absolute to the root of the project', './public');
         $this->addOption('output-dir', 'o', InputOption::VALUE_REQUIRED, 'Define the output directory absolute to the execution of the comand', './output');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
-    {   
+    {        
         $this->publicDirectory = $this->parseInputPath($input->getOption('public-dir'));
         $this->outputDirectory = $this->parseInputPath($input->getOption('output-dir'));
 
         $this->symfonyStyle->section('Dumping static website');
-        $this->symfonyStaticDumperApplication->run($this->publicDirectory, $this->outputDirectory);
+        $this->symfonyStaticDumperApplication->run($this->publicDirectory, $this->outputDirectory, $input->getOption('wdp-only'));
 
         $this->symfonyStyle->note('Run local server to see the output: "php -S localhost:8001 -t output"');
 
